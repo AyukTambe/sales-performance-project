@@ -1,41 +1,43 @@
--- Sales Performance Project
--- SQL Analysis Queries
+/*
+Project: Online Retail Sales Analysis
+Author: Ayuk Tambe
 
--- Q1: Overall average sales
-SELECT AVG(sales_amount) AS avg_sales_amount
-FROM sales_data;
+Dataset:
+UCI Online Retail Dataset
+Source: UCI Machine Learning Repository
+Description: Transactional data from a UK-based online retailer (2010–2011)
+Records: ~541,910
+*/
 
--- Q2: Top 5 reps by sales
-SELECT rep_id, region, sales_amount
-FROM sales_data
-ORDER BY sales_amount DESC
-LIMIT 5;
-
--- Q3: Average sales by region
-SELECT region, AVG(sales_amount) AS avg_sales
-FROM sales_data
-GROUP BY region
-ORDER BY avg_sales DESC;
-
--- Q4: Training vs non-training comparison
-SELECT training_completed, AVG(sales_amount) AS avg_sales
-FROM sales_data
-GROUP BY training_completed;
-
--- Q5: Average sales by years of experience
-SELECT years_experience, AVG(sales_amount) AS avg_sales
-FROM sales_data
-GROUP BY years_experience
-ORDER BY years_experience;
-
--- Q6: Sales by call volume buckets
+-- Q1: Total revenue
 SELECT
-  CASE
-    WHEN calls_made >= 120 THEN '120+ calls'
-    WHEN calls_made BETWEEN 100 AND 119 THEN '100–119 calls'
-    ELSE '<100 calls'
-  END AS calls_bucket,
-  AVG(sales_amount) AS avg_sales
-FROM sales_data
-GROUP BY calls_bucket
-ORDER BY avg_sales DESC;
+  ROUND(SUM(Quantity * UnitPrice), 2) AS total_revenue
+FROM online_retail;
+
+-- Q2: Revenue by country (top 10)
+SELECT
+  Country,
+  ROUND(SUM(Quantity * UnitPrice), 2) AS revenue
+FROM online_retail
+GROUP BY Country
+ORDER BY revenue DESC
+LIMIT 10;
+
+-- Q3: Top 10 customers by revenue
+SELECT
+  CustomerID,
+  ROUND(SUM(Quantity * UnitPrice), 2) AS revenue
+FROM online_retail
+WHERE CustomerID IS NOT NULL AND CustomerID <> ''
+GROUP BY CustomerID
+ORDER BY revenue DESC
+LIMIT 10;
+
+-- Q4: Monthly revenue trend
+SELECT
+  substr(InvoiceDate, 1, 7) AS year_month,
+  ROUND(SUM(Quantity * UnitPrice), 2) AS revenue
+FROM online_retail
+GROUP BY year_month
+ORDER BY year_month;
+
